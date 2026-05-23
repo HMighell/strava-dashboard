@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026 Strava Group Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.js" integrity="sha384-iU8HYtnGQ8Cy4zl7gbNMOhsDTTKX02BTXptVP/vqAWIaTfM7isw76iyZCsjL2eVi" crossorigin="anonymous"></script>
+<style>
+:root {
+  color-scheme: light;
+  --run:  #F97316;
+  --swim: #3B82F6;
+  --ride: #10B981;
+  --run-bg:  #FFF7ED;
+  --swim-bg: #EFF6FF;
+  --ride-bg: #ECFDF5;
+  --run-text:  #9A3412;
+  --swim-text: #1E40AF;
+  --ride-text: #065F46;
+  --surface: #ffffff;
+  --bg: #F1F5F9;
+  --border: #E2E8F0;
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  padding: 18px;
+  font-size: 13px;
+}
+
+/* ── Header ── */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.header-title { font-size: 17px; font-weight: 800; color: var(--text-primary); line-height: 1.2; }
+.header-sub { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+.header-right { text-align: right; }
+.overall-num { font-size: 26px; font-weight: 800; color: var(--text-primary); line-height: 1; }
+.overall-label { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+.year-pct-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  margin-top: 5px;
+}
+.year-pct-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 99px;
+  background: var(--bg);
+  color: var(--text-secondary);
+}
+.track-chip {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 99px;
+  letter-spacing: 0.3px;
+}
+.track-chip.ahead  { background: #DCFCE7; color: #15803D; }
+.track-chip.close  { background: #FEF9C3; color: #A16207; }
+.track-chip.behind { background: #FEE2E2; color: #B91C1C; }
+
+/* ── Sport progress cards ── */
+.sport-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 18px; }
+.sport-card {
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 14px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  border-top: 3px solid transparent;
+}
+.sport-card.run  { border-top-color: var(--run);  }
+.sport-card.swim { border-top-color: var(--swim); }
+.sport-card.ride { border-top-color: var(--ride); }
+.sport-emoji { font-size: 18px; margin-bottom: 6px; display: block; }
+.sport-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-secondary); margin-bottom: 6px; }
+.sport-total { font-size: 18px; font-weight: 800; color: var(--text-primary); line-height: 1; }
+.sport-target { font-size: 10px; color: var(--text-muted); margin-top: 2px; margin-bottom: 8px; }
+.bar-track { background: var(--bg); border-radius: 99px; height: 6px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 99px; }
+.bar-pct { font-size: 11px; font-weight: 700; margin-top: 5px; }
+
+/* ── Pace section ── */
+.pace-divider {
+  margin: 10px 0 8px;
+  border: none;
+  border-top: 1px dashed var(--border);
+}
+.pace-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 4px;
+}
+.pace-col { flex: 1; }
+.pace-col.right-col { text-align: right; }
+.pace-value {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+.pace-value.actual {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.pace-label {
+  font-size: 9px;
+  color: var(--text-muted);
+  margin-top: 1px;
+  line-height: 1.3;
+}
+.pace-divider-vert {
+  width: 1px;
+  align-self: stretch;
+  background: var(--border);
+  flex-shrink: 0;
+}
+.weeks-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 99px;
+  background: var(--bg);
+  color: var(--text-secondary);
+  white-space: nowrap;
+  display: inline-block;
+  margin-bottom: 3px;
+}
+
+/* ── Rankings section ── */
+.card {
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  margin-bottom: 14px;
+}
+.card-title {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.6px; color: var(--text-secondary); margin-bottom: 12px;
+}
+
+table { width: 100%; border-collapse: collapse; }
+thead th {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.5px; color: var(--text-muted);
+  padding: 0 8px 8px; text-align: left; white-space: nowrap;
+  border-bottom: 1px solid var(--border);
+}
+thead th.r { text-align: right; }
+tbody td { padding: 10px 8px; vertical-align: middle; border-bottom: 1px solid #F8FAFC; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: #F8FAFC; }
+
+.rank-wrap { display: flex; align-items: center; gap: 6px; }
+.rank-num {
+  width: 20px; height: 20px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 800; color: white; flex-shrink: 0;
+}
+.medal { font-size: 13px; }
+.athlete-name { font-weight: 700; font-size: 13px; }
+
+.pill {
+  display: inline-flex; align-items: center;
+  padding: 2px 7px; border-radius: 99px;
+  font-size: 11px; font-weight: 700; white-space: nowrap;
+}
+.pill.run  { background: var(--run-bg);  color: var(--run-text);  }
+.pill.swim { background: var(--swim-bg); color: var(--swim-text); }
+.pill.ride { background: var(--ride-bg); color: var(--ride-text); }
+
+td.r { text-align: right; }
+.km-sub { font-size: 10px; color: var(--text-muted); display: block; margin-top: 1px; }
+
+.score-bar-wrap { display: flex; align-items: center; gap: 7px; }
+.score-bar-track { flex: 1; background: var(--bg); border-radius: 99px; height: 6px; overflow: hidden; min-width: 40px; }
+.score-bar-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, #6366F1, #8B5CF6); }
+.score-num { font-size: 13px; font-weight: 800; color: var(--text-primary); white-space: nowrap; min-width: 42px; text-align: right; }
+
+/* ── Chart ── */
+.legend { display: flex; gap: 16px; margin-bottom: 12px; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-secondary); }
+.legend-dot { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
+.chart-wrap { position: relative; height: 220px; }
+
+.note { font-size: 10px; color: var(--text-muted); margin-top: 6px; }
+</style>
+</head>
+<body>
+
+<!-- ===== DATA SECTION — replaced by strava-group-stats skill on each run ===== -->
+<script id="strava-data">
+const STRAVA_DATA = {
+  lastUpdated: "2026-05-23",
+  targets: { run: 7000, swim: 1000, ride: 2000 },
+  athletes: [
+    { name: "Sam Phillips",   run: 239.0,   swim: 34.208,   ride: 237.1 },
+    { name: "Harry Mighell",  run: 12.4,    swim: 192.337,  ride: 0     },
+    { name: "Bruno Consalvo", run: 1247.2,  swim: 2.532,    ride: 0     },
+    { name: "Tess Lloyd",     run: 297.5,   swim: 25.915,   ride: 36.8  },
+    { name: "Kate Hannah",    run: 342.1,   swim: 32.857,   ride: 349.7 },
+    { name: "Jess Hansen",    run: 759.9,   swim: 10.770,   ride: 281.5 }
+  ]
+};
+</script>
+<!-- ===== END DATA SECTION ===== -->
+<div class="header">
+  <div>
+    <div class="header-title">🏆2026 Strava Group Stats</div>
+    <div class="header-sub" id="updated-date">—</div>
+  </div>
+  <div class="header-right">
+    <div class="overall-num" id="overall-pct">—</div>
+    <div class="overall-label">avg. sport completion</div>
+    <div class="year-pct-row">
+      <span class="year-pct-badge" id="year-pct-badge">—</span>
+      <span class="track-chip" id="track-chip">—</span>
+    </div>
+  </div>
+</div>
+  <div class="sport-grid">
+    <div class="sport-card run"><span class="sport-emoji">🏃</span><div class="sport-label">Running</div><div class="sport-total" id="run-total">—</div><div class="sport-target" id="run-target">— km target</div><div class="bar-track"><div class="bar-fill" id="run-bar" style="background:var(--run);width:0%"></div></div><div class="bar-pct" id="run-pct" style="color:var(--run)">—</div><hr class="pace-divider"><div style="text-align:right;margin-bottom:4px"><span class="weeks-badge" id="weeks-badge-run">— wks left</span></div><div class="pace-row"><div class="pace-col"><div class="pace-value actual" id="run-actual-pace">—</div><div class="pace-label">avg/wk this year</div></div><div class="pace-divider-vert"></div><div class="pace-col right-col"><div class="pace-value" id="run-pace">—</div><div class="pace-label">km/wk needed</div></div></div></div>
+    <div class="sport-card swim"><span class="sport-emoji">🏊</span><div class="sport-label">Swimming</div><div class="sport-total" id="swim-total">—</div><div class="sport-target" id="swim-target">— km target</div><div class="bar-track"><div class="bar-fill" id="swim-bar" style="background:var(--swim);width:0%"></div></div><div class="bar-pct" id="swim-pct" style="color:var(--swim)">—</div><hr class="pace-divider"><div style="text-align:right;margin-bottom:4px"><span class="weeks-badge" id="weeks-badge-swim">— wks left</span></div><div class="pace-row"><div class="pace-col"><div class="pace-value actual" id="swim-actual-pace">—</div><div class="pace-label">avg/wk this year</div></div><div class="pace-divider-vert"></div><div class="pace-col right-col"><div class="pace-value" id="swim-pace">—</div><div class="pace-label">km/wk needed</div></div></div></div>
+    <div class="sport-card ride"><span class="sport-emoji">🚴</span><div class="sport-label">Cycling</div><div class="sport-total" id="ride-total">—</div><div class="sport-target" id="ride-target">— km target</div><div class="bar-track"><div class="bar-fill" id="ride-bar" style="background:var(--ride);width:0%"></div></div><div class="bar-pct" id="ride-pct" style="color:var(--ride)">—</div><hr class="pace-divider"><div style="text-align:right;margin-bottom:4px"><span class="weeks-badge" id="weeks-badge-ride">— wks left</span></div><div class="pace-row"><div class="pace-col"><div class="pace-value actual" id="ride-actual-pace">—</div><div class="pace-label">avg/wk this year</div></div><div class="pace-divider-vert"></div><div class="pace-col right-col"><div class="pace-value" id="ride-pace">—</div><div class="pace-label">km/wk needed</div></div></div></div>
+  </div>
+  <div class="card"><div class="card-title">Athlete Rankings &#8212; weighted % of each sport&#39;s target</div><table><thead><tr><th style="width:52px">Rank</th><th>Athlete</th><th class="r">🏃 Run</th><th class="r">🏊 Swim</th><th class="r">🚴 Ride</th><th class="r" style="min-width:110px">Total score</th></tr></thead><tbody id="rankings-body"></tbody></table><div class="note">Score = sum of % contribution to each sport&#39;s target (max 300%). Equal weighting per sport removes distance-unit bias.</div></div>
+<div class="card"><div class="card-title">Distance by athlete (km, ranked order)</div><div class="legend"><div class="legend-item"><div class="legend-dot" style="background:var(--run)"></div>Running</div><div class="legend-item"><div class="legend-dot" style="background:var(--swim)"></div>Swimming</div><div class="legend-item"><div class="legend-dot" style="background:var(--ride)"></div>Cycling</div></div><div class="chart-wrap"><canvas id="chart"></canvas></div></div>
+<script>const fmt=n=>n.toFixed(1).replace(/\B(?=(\d{3})+(?!\d))/g,',');const pct=(v,t)=>Math.min(v/t*100,100);const fmtP=n=>n.toFixed(1)+'%';const now=new Date();const startOf2026=new Date('2026-01-01T00:00:00');const endOf2026=new Date('2026-12-31T23:59:59');const msPerWek=7*24*60*60*1000;const weeksLeft=Math.max((endOf2026-now)/msPerWek,0);const weeksLeftRounded=Math.ceil(weeksLeft);const weeksElapsed=Math.max((now-startOf2026)/msPerWek,0.001);const yearPct=Math.min((now-startOf2026)/(endOf2026-startOf2026)*100,100);const T=STRAVA_DATA.targets;const athletes=STRAVA_DATA.athletes.map(a=>{});const ranked=[...athletes].sort((a,b)=>b.score-a.score);const groupRun=athletes.reduce((s,a)=>s+a.run,0);const groupSwim=athletes.reduce((s,a)=>s+a.swim,0);const groupRide=athletes.reduce((s,a)=>s+a.ride,0);</script>
