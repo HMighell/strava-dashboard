@@ -1,4 +1,11 @@
 <!DOCTYPE html>
+<script type="application/json" id="cowork-artifact-meta">
+{
+  "name": "Strava Group Dashboard",
+  "schemaVersion": 1,
+  "description": "2026 Strava group training dashboard. Shows progress toward annual targets (Swimming 1,000 km / Running 7,000 km / Cycling 2,000 km) for 6 athletes, with weighted % contribution rankings (each sport equally weighted to remove km-unit bias) and a stacked distance chart. Updated weekly by the strava-group-stats skill."
+}
+</script>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -206,15 +213,15 @@ td.r { text-align: right; }
 <!-- ===== DATA SECTION — replaced by strava-group-stats skill on each run ===== -->
 <script id="strava-data">
 const STRAVA_DATA = {
-  lastUpdated: "2026-05-23",
+  lastUpdated: "2026-05-24",
   targets: { run: 7000, swim: 1000, ride: 2000 },
   athletes: [
     { name: "Sam Phillips",   run: 239.0,   swim: 34.208,   ride: 237.1 },
     { name: "Harry Mighell",  run: 12.4,    swim: 192.337,  ride: 0     },
-    { name: "Bruno Consalvo", run: 1247.2,  swim: 2.532,    ride: 0     },
+    { name: "Bruno Consalvo", run: 1251.5,  swim: 2.532,    ride: 0     },
     { name: "Tess Lloyd",     run: 297.5,   swim: 25.915,   ride: 36.8  },
     { name: "Kate Hannah",    run: 342.1,   swim: 32.857,   ride: 349.7 },
-    { name: "Jess Hansen",    run: 759.9,   swim: 10.770,   ride: 281.5 }
+    { name: "Jess Hansen",    run: 764.7,   swim: 10.770,   ride: 281.5 }
   ]
 };
 </script>
@@ -387,4 +394,161 @@ const swimPace   = weeksLeft > 0 ? swimNeeded / weeksLeft : 0;
 const ridePace   = weeksLeft > 0 ? rideNeeded / weeksLeft : 0;
 
 // Actual average pace so far this year
-const runActual  = groupRun
+const runActual  = groupRun  / weeksElapsed;
+const swimActual = groupSwim / weeksElapsed;
+const rideActual = groupRide / weeksElapsed;
+
+// ── Render header ────────────────────────────────────────────────────────
+document.getElementById('updated-date').textContent =
+  'Last updated: ' + STRAVA_DATA.lastUpdated;
+document.getElementById('overall-pct').textContent = fmtP(avgGroupP);
+
+// Year progress badge + on-track chip
+document.getElementById('year-pct-badge').textContent = fmtP(yearPct) + ' of year';
+const gap = avgGroupP - yearPct;
+const chip = document.getElementById('track-chip');
+if (gap >= 0) {
+  chip.textContent = '▲ ahead';
+  chip.className = 'track-chip ahead';
+} else if (gap >= -5) {
+  chip.textContent = '~ close';
+  chip.className = 'track-chip close';
+} else {
+  chip.textContent = '▼ behind';
+  chip.className = 'track-chip behind';
+}
+
+// ── Render sport cards ───────────────────────────────────────────────────
+function fillSport(ids, total, target, actualPace, neededPace) {
+  const p = pct(total, target);
+  document.getElementById(ids.total).textContent = fmt(total) + ' km';
+  document.getElementById(ids.target).textContent = fmt(target) + ' km target';
+  document.getElementById(ids.bar).style.width = p + '%';
+  document.getElementById(ids.pct).textContent = fmtP(p) + ' complete';
+  document.getElementById(ids.actual).textContent = fmt(actualPace) + ' km/wk';
+  document.getElementById(ids.pace).textContent = fmt(neededPace) + ' km/wk';
+  document.getElementById(ids.weeks).textContent = weeksLeftRounded + ' wks left';
+}
+
+fillSport(
+  { total:'run-total', target:'run-target', bar:'run-bar', pct:'run-pct',
+    actual:'run-actual-pace', pace:'run-pace', weeks:'weeks-badge-run' },
+  groupRun, T.run, runActual, runPace
+);
+fillSport(
+  { total:'swim-total', target:'swim-target', bar:'swim-bar', pct:'swim-pct',
+    actual:'swim-actual-pace', pace:'swim-pace', weeks:'weeks-badge-swim' },
+  groupSwim, T.swim, swimActual, swimPace
+);
+fillSport(
+  { total:'ride-total', target:'ride-target', bar:'ride-bar', pct:'ride-pct',
+    actual:'ride-actual-pace', pace:'ride-pace', weeks:'weeks-badge-ride' },
+  groupRide, T.ride, rideActual, ridePace
+);
+
+// ── Render rankings table ────────────────────────────────────────────────
+const MEDALS  = ['🥇','🥈','🥉'];
+const BG_RANK = ['#F59E0B','#9CA3AF','#CD7C4B','#CBD5E1','#CBD5E1','#CBD5E1'];
+const MAX_SCORE = 100;
+
+const tbody = document.getElementById('rankings-body');
+ranked.forEach((a, i) => {
+  const medal = MEDALS[i] || '';
+  const scoreBarW = Math.min(a.score / MAX_SCORE * 100, 100);
+  tbody.innerHTML += `
+    <tr>
+      <td>
+        <div class="rank-wrap">
+          <div class="rank-num" style="background:${BG_RANK[i]}">${i+1}</div>
+          <span class="medal">${medal}</span>
+        </div>
+      </td>
+      <td><span class="athlete-name">${a.name}</span></td>
+      <td class="r">
+        <span class="pill run">${fmtP(a.runP)}</span>
+        <span class="km-sub">${fmt(a.run)} km</span>
+      </td>
+      <td class="r">
+        <span class="pill swim">${fmtP(a.swimP)}</span>
+        <span class="km-sub">${fmt(a.swim)} km</span>
+      </td>
+      <td class="r">
+        <span class="pill ride">${fmtP(a.rideP)}</span>
+        <span class="km-sub">${fmt(a.ride)} km</span>
+      </td>
+      <td class="r">
+        <div class="score-bar-wrap">
+          <div class="score-bar-track">
+            <div class="score-bar-fill" style="width:${scoreBarW}%"></div>
+          </div>
+          <div class="score-num">${fmtP(a.score)}</div>
+        </div>
+      </td>
+    </tr>`;
+});
+
+// ── Chart ────────────────────────────────────────────────────────────────
+const labels = ranked.map(a => a.name.split(' ')[0]);
+new Chart(document.getElementById('chart'), {
+  type: 'bar',
+  data: {
+    labels,
+    datasets: [
+      {
+        label: 'Running',
+        data: ranked.map(a => +a.run.toFixed(1)),
+        backgroundColor: '#F97316',
+        stack: 'total',
+        borderRadius: { topLeft: 0, topRight: 0, bottomLeft: 3, bottomRight: 3 },
+        borderSkipped: 'bottom'
+      },
+      {
+        label: 'Swimming',
+        data: ranked.map(a => +a.swim.toFixed(1)),
+        backgroundColor: '#3B82F6',
+        stack: 'total',
+        borderSkipped: true
+      },
+      {
+        label: 'Cycling',
+        data: ranked.map(a => +a.ride.toFixed(1)),
+        backgroundColor: '#10B981',
+        stack: 'total',
+        borderRadius: { topLeft: 3, topRight: 3, bottomLeft: 0, bottomRight: 0 },
+        borderSkipped: 'top'
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)} km`
+        }
+      }
+    },
+    scales: {
+      x: {
+        stacked: true,
+        grid: { display: false },
+        ticks: { font: { size: 11 }, color: '#475569' }
+      },
+      y: {
+        stacked: true,
+        grid: { color: '#F1F5F9' },
+        border: { display: false },
+        ticks: {
+          callback: v => v + ' km',
+          font: { size: 10 },
+          color: '#94A3B8'
+        }
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>
