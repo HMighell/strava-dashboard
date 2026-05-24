@@ -325,7 +325,7 @@ const STRAVA_DATA = {
     </thead>
     <tbody id="rankings-body"></tbody>
   </table>
-  <div class="note">Score = sum of % contribution to each sport's target (max 300%). Equal weighting per sport removes distance-unit bias.</div>
+  <div class="note">Score = average % completion across all three sports (max 100%). Equal weighting per sport removes distance-unit bias.</div>
 </div>
 
 <!-- Breakdown chart -->
@@ -363,7 +363,7 @@ const athletes = STRAVA_DATA.athletes.map(a => {
   const runP  = pct(a.run,  T.run);
   const swimP = pct(a.swim, T.swim);
   const rideP = pct(a.ride, T.ride);
-  const score = runP + swimP + rideP;
+  const score = (runP + swimP + rideP) / 3;
   return { ...a, runP, swimP, rideP, score };
 });
 
@@ -387,4 +387,4 @@ const swimPace   = weeksLeft > 0 ? swimNeeded / weeksLeft : 0;
 const ridePace   = weeksLeft > 0 ? rideNeeded / weeksLeft : 0;
 
 // Actual average pace so far this year
-const runActual  = groupRun  / we
+const runActual  = groupRun
