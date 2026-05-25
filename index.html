@@ -40,7 +40,7 @@ body {
   font-size: 13px;
 }
 
-/* ── Header ── */
+/* ââ Header ââ */
 .header {
   display: flex;
   justify-content: space-between;
@@ -80,7 +80,7 @@ body {
 .track-chip.close  { background: #FEF9C3; color: #A16207; }
 .track-chip.behind { background: #FEE2E2; color: #B91C1C; }
 
-/* ── Sport progress cards ── */
+/* ââ Sport progress cards ââ */
 .sport-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 18px; }
 .sport-card {
   background: var(--surface);
@@ -100,7 +100,7 @@ body {
 .bar-fill { height: 100%; border-radius: 99px; }
 .bar-pct { font-size: 11px; font-weight: 700; margin-top: 5px; }
 
-/* ── Pace section ── */
+/* ââ Pace section ââ */
 .pace-divider {
   margin: 10px 0 8px;
   border: none;
@@ -148,7 +148,7 @@ body {
   margin-bottom: 3px;
 }
 
-/* ── Rankings section ── */
+/* ââ Rankings section ââ */
 .card {
   background: var(--surface);
   border-radius: 10px;
@@ -199,7 +199,7 @@ td.r { text-align: right; }
 .score-bar-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, #6366F1, #8B5CF6); }
 .score-num { font-size: 13px; font-weight: 800; color: var(--text-primary); white-space: nowrap; min-width: 42px; text-align: right; }
 
-/* ── Chart ── */
+/* ââ Chart ââ */
 .legend { display: flex; gap: 16px; margin-bottom: 12px; flex-wrap: wrap; }
 .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-secondary); }
 .legend-dot { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
@@ -213,15 +213,15 @@ td.r { text-align: right; }
 <!-- ===== DATA SECTION — replaced by strava-group-stats skill on each run ===== -->
 <script id="strava-data">
 const STRAVA_DATA = {
-  lastUpdated: "2026-05-24",
+  lastUpdated: "2026-05-25",
   targets: { run: 7000, swim: 1000, ride: 2000 },
   athletes: [
-    { name: "Sam Phillips",   run: 239.0,   swim: 34.208,   ride: 237.1 },
-    { name: "Harry Mighell",  run: 12.4,    swim: 192.337,  ride: 0     },
-    { name: "Bruno Consalvo", run: 1251.5,  swim: 2.532,    ride: 0     },
-    { name: "Tess Lloyd",     run: 297.5,   swim: 25.915,   ride: 36.8  },
-    { name: "Kate Hannah",    run: 342.1,   swim: 32.857,   ride: 349.7 },
-    { name: "Jess Hansen",    run: 764.7,   swim: 10.770,   ride: 281.5 }
+    { name: "Sam Phillips",   run: 244.6,   swim: 35.208,   ride: 237.1  },
+    { name: "Harry Mighell",  run: 12.4,    swim: 197.337,  ride: 0      },
+    { name: "Bruno Consalvo", run: 1262.1,  swim: 2.532,    ride: 0      },
+    { name: "Tess Lloyd",     run: 305.7,   swim: 27.915,   ride: 36.8   },
+    { name: "Kate Hannah",    run: 348.7,   swim: 32.857,   ride: 349.7  },
+    { name: "Jess Hansen",    run: 775.0,   swim: 10.770,   ride: 281.5  }
   ]
 };
 </script>
@@ -230,15 +230,15 @@ const STRAVA_DATA = {
 <!-- Header -->
 <div class="header">
   <div>
-    <div class="header-title">🏆 2026 Strava Group Stats</div>
-    <div class="header-sub" id="updated-date">—</div>
+    <div class="header-title">ð 2026 Strava Group Stats</div>
+    <div class="header-sub" id="updated-date">â</div>
   </div>
   <div class="header-right">
-    <div class="overall-num" id="overall-pct">—</div>
+    <div class="overall-num" id="overall-pct">â</div>
     <div class="overall-label">avg. sport completion</div>
     <div class="year-pct-row">
-      <span class="year-pct-badge" id="year-pct-badge">—</span>
-      <span class="track-chip" id="track-chip">—</span>
+      <span class="year-pct-badge" id="year-pct-badge">â</span>
+      <span class="track-chip" id="track-chip">â</span>
     </div>
   </div>
 </div>
@@ -246,70 +246,70 @@ const STRAVA_DATA = {
 <!-- Sport progress -->
 <div class="sport-grid">
   <div class="sport-card run">
-    <span class="sport-emoji">🏃</span>
+    <span class="sport-emoji">ð</span>
     <div class="sport-label">Running</div>
-    <div class="sport-total" id="run-total">—</div>
-    <div class="sport-target" id="run-target">— km target</div>
+    <div class="sport-total" id="run-total">â</div>
+    <div class="sport-target" id="run-target">â km target</div>
     <div class="bar-track"><div class="bar-fill" id="run-bar" style="background:var(--run);width:0%"></div></div>
-    <div class="bar-pct" id="run-pct" style="color:var(--run)">—</div>
+    <div class="bar-pct" id="run-pct" style="color:var(--run)">â</div>
     <hr class="pace-divider">
     <div style="text-align:right;margin-bottom:4px">
-      <span class="weeks-badge" id="weeks-badge-run">— wks left</span>
+      <span class="weeks-badge" id="weeks-badge-run">â wks left</span>
     </div>
     <div class="pace-row">
       <div class="pace-col">
-        <div class="pace-value actual" id="run-actual-pace">—</div>
+        <div class="pace-value actual" id="run-actual-pace">â</div>
         <div class="pace-label">avg/wk this year</div>
       </div>
       <div class="pace-divider-vert"></div>
       <div class="pace-col right-col">
-        <div class="pace-value" id="run-pace">—</div>
+        <div class="pace-value" id="run-pace">â</div>
         <div class="pace-label">km/wk needed</div>
       </div>
     </div>
   </div>
   <div class="sport-card swim">
-    <span class="sport-emoji">🏊</span>
+    <span class="sport-emoji">ð</span>
     <div class="sport-label">Swimming</div>
-    <div class="sport-total" id="swim-total">—</div>
-    <div class="sport-target" id="swim-target">— km target</div>
+    <div class="sport-total" id="swim-total">â</div>
+    <div class="sport-target" id="swim-target">â km target</div>
     <div class="bar-track"><div class="bar-fill" id="swim-bar" style="background:var(--swim);width:0%"></div></div>
-    <div class="bar-pct" id="swim-pct" style="color:var(--swim)">—</div>
+    <div class="bar-pct" id="swim-pct" style="color:var(--swim)">â</div>
     <hr class="pace-divider">
     <div style="text-align:right;margin-bottom:4px">
-      <span class="weeks-badge" id="weeks-badge-swim">— wks left</span>
+      <span class="weeks-badge" id="weeks-badge-swim">â wks left</span>
     </div>
     <div class="pace-row">
       <div class="pace-col">
-        <div class="pace-value actual" id="swim-actual-pace">—</div>
+        <div class="pace-value actual" id="swim-actual-pace">â</div>
         <div class="pace-label">avg/wk this year</div>
       </div>
       <div class="pace-divider-vert"></div>
       <div class="pace-col right-col">
-        <div class="pace-value" id="swim-pace">—</div>
+        <div class="pace-value" id="swim-pace">â</div>
         <div class="pace-label">km/wk needed</div>
       </div>
     </div>
   </div>
   <div class="sport-card ride">
-    <span class="sport-emoji">🚴</span>
+    <span class="sport-emoji">ð´</span>
     <div class="sport-label">Cycling</div>
-    <div class="sport-total" id="ride-total">—</div>
-    <div class="sport-target" id="ride-target">— km target</div>
+    <div class="sport-total" id="ride-total">â</div>
+    <div class="sport-target" id="ride-target">â km target</div>
     <div class="bar-track"><div class="bar-fill" id="ride-bar" style="background:var(--ride);width:0%"></div></div>
-    <div class="bar-pct" id="ride-pct" style="color:var(--ride)">—</div>
+    <div class="bar-pct" id="ride-pct" style="color:var(--ride)">â</div>
     <hr class="pace-divider">
     <div style="text-align:right;margin-bottom:4px">
-      <span class="weeks-badge" id="weeks-badge-ride">— wks left</span>
+      <span class="weeks-badge" id="weeks-badge-ride">â wks left</span>
     </div>
     <div class="pace-row">
       <div class="pace-col">
-        <div class="pace-value actual" id="ride-actual-pace">—</div>
+        <div class="pace-value actual" id="ride-actual-pace">â</div>
         <div class="pace-label">avg/wk this year</div>
       </div>
       <div class="pace-divider-vert"></div>
       <div class="pace-col right-col">
-        <div class="pace-value" id="ride-pace">—</div>
+        <div class="pace-value" id="ride-pace">â</div>
         <div class="pace-label">km/wk needed</div>
       </div>
     </div>
@@ -318,15 +318,15 @@ const STRAVA_DATA = {
 
 <!-- Rankings -->
 <div class="card">
-  <div class="card-title">Athlete Rankings — weighted % of each sport's target</div>
+  <div class="card-title">Athlete Rankings â weighted % of each sport's target</div>
   <table>
     <thead>
       <tr>
         <th style="width:52px">Rank</th>
         <th>Athlete</th>
-        <th class="r">🏃 Run</th>
-        <th class="r">🏊 Swim</th>
-        <th class="r">🚴 Ride</th>
+        <th class="r">ð Run</th>
+        <th class="r">ð Swim</th>
+        <th class="r">ð´ Ride</th>
         <th class="r" style="min-width:110px">Total score</th>
       </tr>
     </thead>
@@ -347,12 +347,12 @@ const STRAVA_DATA = {
 </div>
 
 <script>
-// ── Helpers ──────────────────────────────────────────────────────────────
+// ââ Helpers ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 const fmt  = n => n.toFixed(1).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 const pct  = (v, t) => Math.min(v / t * 100, 100);
 const fmtP = n => n.toFixed(1) + '%';
 
-// ── Time calculations ─────────────────────────────────────────────────────
+// ââ Time calculations âââââââââââââââââââââââââââââââââââââââââââââââââââââ
 const now         = new Date();
 const startOf2026 = new Date('2026-01-01T00:00:00');
 const endOf2026   = new Date('2026-12-31T23:59:59');
@@ -363,7 +363,7 @@ const weeksLeftRounded = Math.ceil(weeksLeft);
 const weeksElapsed     = Math.max((now - startOf2026) / msPerWeek, 0.001); // avoid /0
 const yearPct          = Math.min((now - startOf2026) / (endOf2026 - startOf2026) * 100, 100);
 
-// ── Compute ──────────────────────────────────────────────────────────────
+// ââ Compute ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 const T = STRAVA_DATA.targets;
 
 const athletes = STRAVA_DATA.athletes.map(a => {
@@ -398,7 +398,7 @@ const runActual  = groupRun  / weeksElapsed;
 const swimActual = groupSwim / weeksElapsed;
 const rideActual = groupRide / weeksElapsed;
 
-// ── Render header ────────────────────────────────────────────────────────
+// ââ Render header ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 document.getElementById('updated-date').textContent =
   'Last updated: ' + STRAVA_DATA.lastUpdated;
 document.getElementById('overall-pct').textContent = fmtP(avgGroupP);
@@ -408,17 +408,17 @@ document.getElementById('year-pct-badge').textContent = fmtP(yearPct) + ' of yea
 const gap = avgGroupP - yearPct;
 const chip = document.getElementById('track-chip');
 if (gap >= 0) {
-  chip.textContent = '▲ ahead';
+  chip.textContent = 'â² ahead';
   chip.className = 'track-chip ahead';
 } else if (gap >= -5) {
   chip.textContent = '~ close';
   chip.className = 'track-chip close';
 } else {
-  chip.textContent = '▼ behind';
+  chip.textContent = 'â¼ behind';
   chip.className = 'track-chip behind';
 }
 
-// ── Render sport cards ───────────────────────────────────────────────────
+// ââ Render sport cards âââââââââââââââââââââââââââââââââââââââââââââââââââ
 function fillSport(ids, total, target, actualPace, neededPace) {
   const p = pct(total, target);
   document.getElementById(ids.total).textContent = fmt(total) + ' km';
@@ -446,8 +446,8 @@ fillSport(
   groupRide, T.ride, rideActual, ridePace
 );
 
-// ── Render rankings table ────────────────────────────────────────────────
-const MEDALS  = ['🥇','🥈','🥉'];
+// ââ Render rankings table ââââââââââââââââââââââââââââââââââââââââââââââââ
+const MEDALS  = ['ð¥','ð¥','ð¥'];
 const BG_RANK = ['#F59E0B','#9CA3AF','#CD7C4B','#CBD5E1','#CBD5E1','#CBD5E1'];
 const MAX_SCORE = 100;
 
@@ -487,7 +487,7 @@ ranked.forEach((a, i) => {
     </tr>`;
 });
 
-// ── Chart ────────────────────────────────────────────────────────────────
+// ââ Chart ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 const labels = ranked.map(a => a.name.split(' ')[0]);
 new Chart(document.getElementById('chart'), {
   type: 'bar',
